@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<p>register page</p>
+<head>
+    <script>
+		function hashPassword() {
+			var password = document.getElementById("password").value;
+            const salt = Array.from(window.crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
+			var hash = sha256(salt + password);
+            // console.log(salt);
+
+			document.getElementById("hashed_password").value = hash;
+            document.getElementById("salt_input").value = salt;
+
+		}
+	</script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+</head>
+<body>
+	<form method="post" action="/register" onsubmit="hashPassword();">
+		<label for="username">Username:</label>
+		<input type="text" id="username" name="username"><br><br>
+		<label for="password">Password:</label>
+		<input type="password" id="password" name="password"><br><br>
+		<input type="hidden" id="hashed_password" name="hashed_password">
+        <input type="hidden" id="salt_input" name="salt"> 
+		<input type="submit" value="Login">
+	</form>
+    <p id="return-message">{{ return_message }}</p>
+</body>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hash Password</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+  </head>
+  <body>
+    <h1>Hash Password</h1>
+    <form action="/login" method="POST" onsubmit="hashPassword(event)">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+      <br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <br>
+      <button type="submit">Submit</button>
+      <input type="hidden" name="salt" id="salt">
+    </form>
+    <p id="message"></p>
+    <p> {{ return_message }} </p>
+    <script>
+      function hashPassword(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+        var password = document.getElementById('password').value;
+        
+        // Make an HTTP request to get the salt from the server
+        var xhr = new XMLHttpRequest();
+
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+              var salt = xhr.responseText;
+              document.getElementById("salt").value = salt;
+              console.log(salt);
+              var hashedPassword = sha256(salt + password);
+              document.getElementById('password').value = hashedPassword;
+              document.forms[0].submit(); // Submit the form now that the password is hashed
+            }
+          }
+        };
+        var username = document.getElementById("username").value;
+        xhr.open('GET', '/salt/' + encodeURIComponent(username), true);
+        xhr.send(null);
+      }
+    </script>
+  </body>
+</html>
