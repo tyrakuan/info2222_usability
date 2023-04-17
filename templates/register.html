@@ -3,11 +3,11 @@
 <p>register page</p>
 <head>
     <script>
+		// Hashes the password and adds salt
 		function hashPassword() {
 			var password = document.getElementById("password").value;
             const salt = Array.from(window.crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
 			var hash = sha256(salt + password);
-            // console.log(salt);
 
 			document.getElementById("hashed_password").value = hash;
             document.getElementById("salt_input").value = salt;

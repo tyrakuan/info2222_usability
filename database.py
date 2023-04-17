@@ -1,7 +1,7 @@
-from imports import render_template, redirect, url_for
+from imports import render_template
 
-class Database:
-    # key is username, values stored as tuple (hashed_password, salt)
+# Database stores entry within a dict: the username is the key and the value is the class instance when a user registers
+class Database:    
     
     def __init__(self):
         self.dict_database = {}
@@ -20,7 +20,7 @@ class Database:
     def check_database(self, username):
         return self.dict_database.get(username)
     
-    def add_to_database(self, data): # checks if entry is in database, if so return error, else add to database
+    def add_to_database(self, data): # checks if entry is in database, if so return error, else add to database - route to login
         if self.check_database(data[0]) is not None:
             print("already in database")
             return render_template('register.html', return_message="Username already taken")
@@ -29,20 +29,21 @@ class Database:
         
         return render_template('login.html')
     
-    def check_credentials(self, data):
+    def check_credentials(self, data): # Checks that the username and corresponding password (hash) is correct
         if (user_object := self.check_database(data[0])) is None:
             print("username not in database")
             return (False, "Username does not exist. Register account.")
-            return render_template('login.html', return_message="Username does not exist. Register account")
+            # return render_template('login.html', return_message="Username does not exist. Register account")
 
         if user_object.password != data[1]:
             print("password is incorrect")
             return (False, "Password is incorrect. Try again")
-            return render_template('login.html', return_message="Password is incorrect. Try again")
+            # return render_template('login.html', return_message="Password is incorrect. Try again")
                 
         return (True, user_object.username)
 
-    
+
+# Class instance for every user including friends
 class User:
     
     def __init__(self, data):

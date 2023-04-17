@@ -57,13 +57,10 @@
 
     // every emit send public key to itself
     socket.on('publicKey', async function(key) {
-      console.log("this runs!")
-      console.log(key)
-      console.log(publicKeyJwk)
+
       // If not its own key
       if (JSON.stringify(key) !== JSON.stringify(publicKeyJwk)) {
         publicKeyOther = key;
-        // console.log(publicKeyJwk)
         console.log("not its key!")
         derivedKey = await keyDeriver(publicKeyOther, privateKeyJwk);
       }
@@ -77,8 +74,6 @@
       socket.emit('publicKey', publicKeyJwk)
       var messages = document.getElementById('messages');
       var decryptedMessage;
-      // console.log(derivedKey)
-      // console.log(ownDerivedKey)
       if (derivedKey != ownDerivedKey) {
         decryptedMessage = await messageDecryptor(data, derivedKey);
 
@@ -97,9 +92,7 @@
       // gets message input and sends it out
       var messageInput = document.getElementById('message_input');
       var myMessage = messageInput.value;
-      var newMessage = await messageEncryptor(myMessage, derivedKey);
-      console.log(newMessage);
-  
+      var newMessage = await messageEncryptor(myMessage, derivedKey);  
       messageInput.value = '';
       socket.emit('message', newMessage);
     });

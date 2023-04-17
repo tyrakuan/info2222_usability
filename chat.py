@@ -28,7 +28,6 @@ def login():
 def login_info():
     username = request.form['username']
     password = request.form['password']
-    # salt = request.form['salt']
     
     if not (cc := database.check_credentials((username, password)))[0]:
         return render_template('login.html', return_message=cc[1])
@@ -65,6 +64,7 @@ def handle_message(message):
 def handle_public_key(publicKey):
     emit('publicKey', publicKey, broadcast=True)
 
+# get salt from database and return to front end
 
 @app.route('/salt/<username>', methods=['GET'])
 def return_salt(username):
@@ -81,9 +81,7 @@ def return_salt(username):
 if __name__ == '__main__':
     cert = 'certificates/0.0.0.0.pem'
     key = 'certificates/0.0.0.0-key.pem'
-    cert_2 = 'certificates/127.0.0.1.pem'
-    key_2 = 'certificates/127.0.0.1-key.pem'
+    # cert_2 = 'certificates/127.0.0.1.pem'
+    # key_2 = 'certificates/127.0.0.1-key.pem'
     
-    # context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    # context.load_cert_chain(cert, key)
     socketio.run(app, host='0.0.0.0', port=8080, certfile=cert, keyfile=key)
