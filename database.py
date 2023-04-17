@@ -1,4 +1,4 @@
-from imports import render_template
+from imports import render_template, redirect, url_for
 
 class Database:
     # key is username, values stored as tuple (hashed_password, salt)
@@ -11,6 +11,11 @@ class Database:
         new_user = User(data)
         
         self.dict_database.update({new_user.username: new_user})
+        if new_user.username == 'liam':
+            new_user.friend_list.append('tyra')
+        
+        else:
+            new_user.friend_list.append('liam')
         
     def check_database(self, username):
         return self.dict_database.get(username)
@@ -21,19 +26,22 @@ class Database:
             return render_template('register.html', return_message="Username already taken")
         
         self.add_entry(data)
+        
         return render_template('login.html')
     
     def check_credentials(self, data):
         if (user_object := self.check_database(data[0])) is None:
             print("username not in database")
+            return (False, "Username does not exist. Register account.")
             return render_template('login.html', return_message="Username does not exist. Register account")
 
         if user_object.password != data[1]:
             print("password is incorrect")
+            return (False, "Password is incorrect. Try again")
             return render_template('login.html', return_message="Password is incorrect. Try again")
                 
-        return render_template('chat.html')
-    
+        return (True, user_object.username)
+
     
 class User:
     

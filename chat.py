@@ -14,9 +14,9 @@ socketio = SocketIO(app)
 def index():
     return render_template('index.html')
 
-@app.route('/chat')
-def chat():
-    return render_template('chat.html')
+@app.route('/chat/<username>')
+def chat(username, friends):
+    return render_template('chat.html', username=username, data=friends)
 
 # login routines
 
@@ -30,7 +30,11 @@ def login_info():
     password = request.form['password']
     # salt = request.form['salt']
     
-    return database.check_credentials((username, password))
+    if not (cc := database.check_credentials((username, password)))[0]:
+        return render_template('login.html', return_message=cc[1])
+    
+    user = database.check_database(username)
+    return chat(username, user.friend_list)
 
 # register routines
 
@@ -52,6 +56,8 @@ def register_info():
 
 @socketio.on('message')
 def handle_message(message):
+    username = request.args.get('username')
+    
     print('received message: ' + message)
     emit('message', message, broadcast=True)
 
@@ -66,6 +72,7 @@ def return_salt(username):
     
     # print(salt)
     return salt
+
 
 if __name__ == '__main__':
     cert = 'certificates/0.0.0.0.pem'
