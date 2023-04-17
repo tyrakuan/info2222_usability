@@ -27,20 +27,82 @@
       <button>Send</button>
     </form>
 
-    <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>    
-    <script>
-      var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-      socket.on('message', function(data) {
-        var messages = document.getElementById('messages');
-        messages.innerHTML += '<p>' + data + '</p>';
-      });
-      document.querySelector('form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        var messageInput = document.getElementById('message_input');
-        var message = messageInput.value;
-        messageInput.value = '';
-        socket.emit('message', message);
-      });
-    </script>
+
   </body>
 </html>
+
+<!--Key scripts-->
+<script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>    
+
+<script type="module">
+  import keyGenerator from './static/js/generateKey.js';
+  import keyDeriver from './static/js/deriveKey.js';
+  import messageEncryptor from './static/js/encryptText.js';
+  import messageDecryptor from './static/js/decryptText.js';
+
+  window.addEventListener('load', async () => {
+    const keys = await keyGenerator();
+    const publicKeyJwk = keys.publicKeyJwk;
+    const privateKeyJwk = keys.privateKeyJwk;
+    let derivedKey;
+    const ownDerivedKey = await keyDeriver(publicKeyJwk, privateKeyJwk);
+    let publicKeyOther
+  
+    // socket initialisation
+    const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+    
+    setInterval(() => {
+      socket.emit('publicKey', publicKeyJwk);
+    }, 1000); 
+
+    // every emit send public key to itself
+    socket.on('publicKey', async function(key) {
+      console.log("this runs!")
+      console.log(key)
+      console.log(publicKeyJwk)
+      // If not its own key
+      if (JSON.stringify(key) !== JSON.stringify(publicKeyJwk)) {
+        publicKeyOther = key;
+        // console.log(publicKeyJwk)
+        console.log("not its key!")
+        derivedKey = await keyDeriver(publicKeyOther, privateKeyJwk);
+      }
+      else {
+        console.log("its key!")
+      }
+    })
+  
+    // when a message is received
+    socket.on('message', async function(data) {
+      socket.emit('publicKey', publicKeyJwk)
+      var messages = document.getElementById('messages');
+      var decryptedMessage;
+      // console.log(derivedKey)
+      // console.log(ownDerivedKey)
+      if (derivedKey != ownDerivedKey) {
+        decryptedMessage = await messageDecryptor(data, derivedKey);
+
+      }
+      else {
+        decryptedMessage = await messageDecryptor(data, ownDerivedKey);
+      }
+      messages.innerHTML += '<p>' + decryptedMessage + '</p>';
+    });
+  
+    // waits for submit button to transfer data
+    document.querySelector('form').addEventListener('submit', async function(e) {
+      // prevents reloading
+      e.preventDefault();
+  
+      // gets message input and sends it out
+      var messageInput = document.getElementById('message_input');
+      var myMessage = messageInput.value;
+      var newMessage = await messageEncryptor(myMessage, derivedKey);
+      console.log(newMessage);
+  
+      messageInput.value = '';
+      socket.emit('message', newMessage);
+    });
+  });
+  
+</script>

@@ -58,8 +58,12 @@ def register_info():
 def handle_message(message):
     username = request.args.get('username')
     
-    print('received message: ' + message)
+    print('received message: ', message)
     emit('message', message, broadcast=True)
+    
+@socketio.on('publicKey')
+def handle_public_key(publicKey):
+    emit('publicKey', publicKey, broadcast=True)
 
 
 @app.route('/salt/<username>', methods=['GET'])
