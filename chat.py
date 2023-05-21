@@ -1,5 +1,7 @@
 from imports import ssl, render_template, emit, request, Flask, SocketIO
 from database import Database
+from flask import redirect
+import datetime
 
 database = Database()
 
@@ -7,18 +9,35 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
+# Store messages in a list
+messages = []
+
 # Main pages
 @app.route('/')
 @app.route('/home')
 def index():
     return render_template('index.html')
 
-# @app.route('/chat/<username>')
-# def chat(username, friends):
-#     return render_template('chat.html', username=username, data=friends)
-
+# Chat page
 @app.route('/chat/<username>')
 def chat(username, role):
+    return render_template('chat.html', username=username, role=role)
+
+@app.post('/chat/<username>')
+def chat_info(username):
+    title = request.form['title']
+    message = request.form['message']
+
+    # Create a dictionary to represent the question
+    message_data = {
+        'username': username,
+        'title': title,
+        'message': message,
+    }
+
+    # Append the question to the list
+    messages.append(message_data)
+
     return render_template('chat.html', username=username, role=role)
 
 # Login routines
