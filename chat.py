@@ -24,13 +24,12 @@ def another_chat(username, role):
 
 @app.route('/chat/<username>', methods=['POST'])
 def chat(username, role):
-    title = request.form.get('title')
+    # title = request.form.get('title')
     message = request.form.get('message')
 
     # Create a dictionary to represent the message
     message_data = {
         'username': username,
-        'title': title,
         'message': message,
     }
 
@@ -42,6 +41,9 @@ def chat(username, role):
 
     with open('messages.txt', 'a') as f:
         f.write(f"{message_data['username']}: ({message_data['title']}): {message_data['message']}\n")
+
+    # Emit the message to all connected clients
+    socketio.emit('message', message_data)
 
     return redirect(url_for('chat', username=username, role=role))  # it's better to redirect after POST
 
@@ -95,15 +97,9 @@ def register_info():
 
 # emit message
 @socketio.on('message')
-def handle_message(message):
-    username = request.args.get('username')
-    
-    print('received message: ', message)
-    emit('message', message, broadcast=True)
-    
-@socketio.on('publicKey')
-def handle_public_key(publicKey):
-    emit('publicKey', publicKey, broadcast=True)
+def handle_message(data):
+    # Send message to all clients, except the sender
+    socketio.emit('message', data, broadcast=True, include_self=False)
 
 # get salt from database and return to front end
 

@@ -20,12 +20,8 @@
       
       <!-- Message Form -->
       <form class="message-form">
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required><br>
-        
         <label for="message">Message:</label>
         <textarea id="message" name="message" required></textarea><br>
-        
         <button type="submit">Post Message</button>
       </form>
       
@@ -34,125 +30,44 @@
         <!-- messages to be added here -->
       </ul>
     </div>
-    
-    <script>
-      // JavaScript code for handling form submission and displaying questions
-      document.querySelector('.message-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-        
-        var titleInput = document.getElementById('title');
-        var messageInput = document.getElementById('message');
-        var messageList = document.querySelector('.message-list');
-        
-        var title = titleInput.value;
-        var message = messageInput.value;
-        
-        var messageItem = document.createElement('li');
-        messageItem.className = 'message';
-        
-        messageItem.innerHTML = '<span class="title">' + '{{ username }}: ' + title + '</span><br>' + message;
-        
-        messageList.appendChild(messageItem);
-        
-        // Clear form inputs
-        titleInput.value = '';
-        messageInput.value = '';
+
+    <!--Key scripts-->
+    <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>    
+
+    <script type="module">
+      window.addEventListener('load', async () => {
+        // socket initialisation
+        const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+        // When a 'message' event is received from the server
+        socket.on('message', function(message_data) {
+            var messages = document.querySelector('.message-list');
+            var newMessage = document.createElement('li');
+            newMessage.className = 'message';
+            newMessage.innerHTML = '{{ username }}: ' +'</span><br>' + message;
+            messages.appendChild(newMessage);
+        });
+
+        // Handle form submission and display questions
+        document.querySelector('.message-form').addEventListener('submit', function(event) {
+          event.preventDefault();
+          var messageInput = document.getElementById('message');
+          var message = messageInput.value;
+
+          var messageList = document.querySelector('.message-list');
+          var messageItem = document.createElement('li');
+          messageItem.className = 'message';
+
+          messageItem.innerHTML = '{{ username }}: ' +'</span><br>' + message;
+          messageList.appendChild(messageItem);
+
+          // Emit the 'message' event to the server
+          socket.emit('message', {username: '{{ username }}', message: message});
+
+          // Clear form inputs
+          messageInput.value = '';
+        });
       });
     </script>
-
-
-    <!-- <h1>Flask Chat</h1>
-
-    <table style="border: 2px solid black">
-      <thead>
-        <tr>
-          <th>Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for row in data %}
-          <tr>
-            <td>{{ row }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <br />
-    <div id="messages"></div>
-    <form action="">
-      <input id="message_input" autocomplete="off" />
-      <button>Send</button>
-    </form> -->
-
-
   </body>
 </html>
-
-<!--Key scripts-->
-<script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>    
-
-<script type="module">
-  import keyGenerator from './static/js/generateKey.js';
-  import keyDeriver from './static/js/deriveKey.js';
-  import messageEncryptor from './static/js/encryptText.js';
-  import messageDecryptor from './static/js/decryptText.js';
-
-  window.addEventListener('load', async () => {
-    const keys = await keyGenerator();
-    const publicKeyJwk = keys.publicKeyJwk;
-    const privateKeyJwk = keys.privateKeyJwk;
-    let derivedKey;
-    const ownDerivedKey = await keyDeriver(publicKeyJwk, privateKeyJwk);
-    let publicKeyOther
-  
-    // socket initialisation
-    const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-    
-    setInterval(() => {
-      socket.emit('publicKey', publicKeyJwk);
-    }, 1000); 
-
-    // every emit send public key to itself
-    socket.on('publicKey', async function(key) {
-
-      // If not its own key
-      if (JSON.stringify(key) !== JSON.stringify(publicKeyJwk)) {
-        publicKeyOther = key;
-        console.log("not its key!")
-        derivedKey = await keyDeriver(publicKeyOther, privateKeyJwk);
-      }
-      else {
-        console.log("its key!")
-      }
-    })
-  
-    // when a message is received
-    socket.on('message', async function(data) {
-      socket.emit('publicKey', publicKeyJwk)
-      var messages = document.getElementById('messages');
-      var decryptedMessage;
-      if (derivedKey != ownDerivedKey) {
-        decryptedMessage = await messageDecryptor(data, derivedKey);
-
-      }
-      else {
-        decryptedMessage = await messageDecryptor(data, ownDerivedKey);
-      }
-      messages.innerHTML += '<p>' + decryptedMessage + '</p>';
-    });
-  
-    // waits for submit button to transfer data
-    document.querySelector('form').addEventListener('submit', async function(e) {
-      // prevents reloading
-      e.preventDefault();
-  
-      // gets message input and sends it out
-      var messageInput = document.getElementById('message_input');
-      var myMessage = messageInput.value;
-      var newMessage = await messageEncryptor(myMessage, derivedKey);  
-      messageInput.value = '';
-      socket.emit('message', newMessage);
-    });
-  });
-  
-</script>
