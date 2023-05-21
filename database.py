@@ -9,19 +9,17 @@ class Database:
     def add_entry(self, data):
         # data -> (username, password, salt, role)
         new_user = User(data)
+
+        print(new_user.username, new_user.role)
         
         self.dict_database.update({new_user.username: new_user})
-
         
     def check_database(self, username):
         return self.dict_database.get(username)
     
-    def check_role(self, username): # test this
-        return self.dict_database.get(username)[3]
-    
     def add_to_database(self, data): # checks if entry is in database, if so return error, else add to database - route to login
         if self.check_database(data[0]) is not None:
-            print("already in database")
+            print("Already in database")
             return render_template('register.html', return_message="Username already taken")
         
         self.add_entry(data)
@@ -30,25 +28,24 @@ class Database:
     
     def check_credentials(self, data): # Checks that the username and corresponding password (hash) is correct
         if (user_object := self.check_database(data[0])) is None:
-            print("username not in database")
+            print("Username not in database")
             return (False, "Username does not exist. Register account.")
             # return render_template('login.html', return_message="Username does not exist. Register account")
 
         if user_object.password != data[1]:
-            print("password is incorrect")
-            return (False, "Password is incorrect. Try again")
+            print("Password is incorrect")
+            return (False, "Password is incorrect. Try again.")
             # return render_template('login.html', return_message="Password is incorrect. Try again")
                 
         return (True, user_object.username)
 
 
-# Class instance for every user - both students and admins
+# Class instance for every user
 class User:
     
     def __init__(self, data):
         self.username = data[0]
         self.password = data[1]
         self.salt = data[2]
-        self.role = data[3] # can be either student or admin
-        # self.friend_list = []
+        self.role = data[3]
         
