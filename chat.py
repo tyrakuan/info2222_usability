@@ -51,7 +51,6 @@ def register_info():
     role = request.form['role']
 
     return database.add_to_database((username, hash_pass, salt, role))
-    
 
 # emit message
 @socketio.on('message')

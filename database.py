@@ -9,6 +9,7 @@ class Database:
     def add_entry(self, data):
         # data -> (username, password, salt, role)
         new_user = User(data)
+        print(new_user)
         
         self.dict_database.update({new_user.username: new_user})
 

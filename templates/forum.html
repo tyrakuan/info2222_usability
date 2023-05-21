@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Forum</title>
+  <style>
+    /* CSS styles for the forum layout */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    
+    h1 {
+      text-align: center;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .question-form {
+      margin-bottom: 20px;
+    }
+    
+    .question-list {
+      list-style-type: none;
+      padding: 0;
+    }
+    
+    .question {
+      background-color: #f5f5f5;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .question .author {
+      font-weight: bold;
+    }
+    
+    .question .timestamp {
+      font-size: 0.8em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Forum</h1>
+    
+    <!-- Question Form -->
+    <form class="question-form">
+      <label for="username">Name:</label>
+      <input type="text" id="username" name="username" required><br>
+      
+      <label for="question">Question:</label>
+      <textarea id="question" name="question" required></textarea><br>
+      
+      <button type="submit">Post Question</button>
+    </form>
+    
+    <!-- Question List -->
+    <ul class="question-list">
+      <!-- Each question will be dynamically added here -->
+    </ul>
+  </div>
+  
+  <script>
+    // JavaScript code for handling form submission and displaying questions
+    document.querySelector('.question-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      var authorInput = document.getElementById('author');
+      var questionInput = document.getElementById('question');
+      var questionList = document.querySelector('.question-list');
+      
+      var author = authorInput.value;
+      var question = questionInput.value;
+      var timestamp = new Date().toLocaleString();
+      
+      var questionItem = document.createElement('li');
+      questionItem.className = 'question';
+      
+      questionItem.innerHTML = '<span class="author">' + author + '</span> - <span class="timestamp">' + timestamp + '</span><br>' + question;
+      
+      questionList.appendChild(questionItem);
+      
+      // Clear form inputs
+      authorInput.value = '';
+      questionInput.value = '';
+    });
+  </script>
+</body>
+</html>
