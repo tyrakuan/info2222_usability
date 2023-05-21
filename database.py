@@ -12,7 +12,6 @@ class Database:
         
         self.dict_database.update({new_user.username: new_user})
 
-        new_user.role = "student" # new registered users are regular
         
     def check_database(self, username):
         return self.dict_database.get(username)

@@ -7,19 +7,21 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
-# main pages
-
+# Main pages
 @app.route('/')
 @app.route('/home')
 def index():
     return render_template('index.html')
 
+# @app.route('/chat/<username>')
+# def chat(username, friends):
+#     return render_template('chat.html', username=username, data=friends)
+
 @app.route('/chat/<username>')
-def chat(username, friends):
-    return render_template('chat.html', username=username, data=friends)
+def forum(username, role):
+    return render_template('forum.html', username=username, data=role)
 
-# login routines
-
+# Login routines
 @app.route('/login')
 def login():
     return render_template('login.html', return_message="")
@@ -33,10 +35,9 @@ def login_info():
         return render_template('login.html', return_message=cc[1])
     
     user = database.check_database(username)
-    return chat(username, user.friend_list)
+    # return chat(username, user.friend_list)
 
-# register routines
-
+# Register routines
 @app.route('/register')
 def register():
     return render_template('register.html', return_message="")
@@ -47,12 +48,12 @@ def register_info():
     username = request.form['username']
     hash_pass = request.form['hashed_password']
     salt = request.form['salt']
+    role = request.form['role']
 
-    return database.add_to_database((username, hash_pass, salt))
+    return database.add_to_database((username, hash_pass, salt, role))
     
 
 # emit message
-
 @socketio.on('message')
 def handle_message(message):
     username = request.args.get('username')
@@ -79,9 +80,10 @@ def return_salt(username):
 
 
 if __name__ == '__main__':
-    cert = 'certificates/0.0.0.0.pem'
-    key = 'certificates/0.0.0.0-key.pem'
-    # cert_2 = 'certificates/127.0.0.1.pem'
-    # key_2 = 'certificates/127.0.0.1-key.pem'
+    app.run(debug=True)
+    # cert = 'certificates/0.0.0.0.pem'
+    # key = 'certificates/0.0.0.0-key.pem'
+    # # cert_2 = 'certificates/127.0.0.1.pem'
+    # # key_2 = 'certificates/127.0.0.1-key.pem'
     
-    socketio.run(app, host='0.0.0.0', port=8080, certfile=cert, keyfile=key)
+    # socketio.run(app, host='0.0.0.0', port=8080, certfile=cert, keyfile=key)
