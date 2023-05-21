@@ -1,7 +1,7 @@
 from imports import ssl, render_template, emit, request, Flask, SocketIO
 from database import Database
 from msg_database import MessageDatabase
-from flask import redirect, url_for
+from flask import redirect, url_for, session
 
 database = Database()
 # messages = MessageDatabase()
@@ -19,12 +19,12 @@ def index():
 
 # Chat page
 @app.route('/chat/<username>')
-def another_chat(username, role):
+def another_chat(username):
+    role = session['role']  # Fetch role from session
     return render_template('chat.html', username=username, role=role)
 
-@app.route('/chat/<username>', methods=['POST'])
+@app.route('/chat/<username>')
 def chat(username, role):
-    # title = request.form.get('title')
     message = request.form.get('message')
 
     # Create a dictionary to represent the message
@@ -35,17 +35,13 @@ def chat(username, role):
 
     messages.append(message_data)
 
-    # # Append the question to the list
-    # messages.add_message_to_database(message_data)
-    # messages.read_from_database()
-
     with open('messages.txt', 'a') as f:
         f.write(f"{message_data['username']}: ({message_data['title']}): {message_data['message']}\n")
 
     # Emit the message to all connected clients
     socketio.emit('message', message_data)
 
-    return redirect(url_for('chat', username=username, role=role))  # it's better to redirect after POST
+    return redirect(url_for('chat', username=username, role=role))
 
 
 # Course guide
@@ -77,7 +73,9 @@ def login_info():
         return render_template('login.html', return_message=cc[1])
     
     user = database.check_database(username)
-    return another_chat(username, user.role)
+    session['role'] = user.role
+    return redirect(url_for('another_chat', username=username))
+
 
 # Register routines
 @app.route('/register')
@@ -98,8 +96,9 @@ def register_info():
 # emit message
 @socketio.on('message')
 def handle_message(data):
-    # Send message to all clients, except the sender
-    socketio.emit('message', data, broadcast=True, include_self=False)
+    # Send message to all clients
+    print("MESSAGE SENT")
+    socketio.emit('message', data, broadcast=True)
 
 # get salt from database and return to front end
 
@@ -117,9 +116,4 @@ def return_salt(username):
 
 if __name__ == '__main__':
     app.run(debug=True)
-    # cert = 'certificates/0.0.0.0.pem'
-    # key = 'certificates/0.0.0.0-key.pem'
-    # # cert_2 = 'certificates/127.0.0.1.pem'
-    # # key_2 = 'certificates/127.0.0.1-key.pem'
     
-    # socketio.run(app, host='0.0.0.0', port=8080, certfile=cert, keyfile=key)

@@ -26,48 +26,40 @@
       </form>
       
       <!-- Message List -->
-      <ul class="message-list">
+      <ul class="message-list" id="messages">
         <!-- messages to be added here -->
       </ul>
     </div>
 
     <!--Key scripts-->
-    <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>    
-
     <script type="module">
       window.addEventListener('load', async () => {
-        // socket initialisation
-        const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
-
-        // When a 'message' event is received from the server
-        socket.on('message', function(message_data) {
-            var messages = document.querySelector('.message-list');
-            var newMessage = document.createElement('li');
-            newMessage.className = 'message';
-            newMessage.innerHTML = '{{ username }}: ' +'</span><br>' + message;
-            messages.appendChild(newMessage);
-        });
-
-        // Handle form submission and display questions
-        document.querySelector('.message-form').addEventListener('submit', function(event) {
-          event.preventDefault();
-          var messageInput = document.getElementById('message');
-          var message = messageInput.value;
-
-          var messageList = document.querySelector('.message-list');
-          var messageItem = document.createElement('li');
-          messageItem.className = 'message';
-
-          messageItem.innerHTML = '{{ username }}: ' +'</span><br>' + message;
-          messageList.appendChild(messageItem);
-
-          // Emit the 'message' event to the server
-          socket.emit('message', {username: '{{ username }}', message: message});
-
-          // Clear form inputs
-          messageInput.value = '';
-        });
+          // socket initialisation
+          const socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+  
+          // receive message
+          socket.on('message', async function(data) {
+              var messageList = document.querySelector('.message-list');
+              var messageItem = document.createElement('li');
+              messageItem.className = 'message';
+              messageItem.innerHTML = data.username + ': ' + data.message;
+              messageList.appendChild(messageItem);
+          });
+  
+          // Handle form submission and display questions
+          document.querySelector('.message-form').addEventListener('submit', function(event) {
+              event.preventDefault();
+              var messageInput = document.getElementById('message');
+              var message = messageInput.value;
+  
+              // Emit the 'message' event to the server
+              socket.emit('message', {username: '{{ username }}', message: message});
+  
+              // Clear form inputs
+              messageInput.value = '';
+          });
       });
     </script>
+  
   </body>
 </html>
