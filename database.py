@@ -9,8 +9,6 @@ class Database:
     def add_entry(self, data):
         # data -> (username, password, salt, role)
         new_user = User(data)
-
-        print(new_user.username, new_user.role)
         
         self.dict_database.update({new_user.username: new_user})
         
@@ -42,7 +40,6 @@ class Database:
 
 # Class instance for every user
 class User:
-    
     def __init__(self, data):
         self.username = data[0]
         self.password = data[1]

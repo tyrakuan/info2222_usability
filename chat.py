@@ -1,16 +1,14 @@
 from imports import ssl, render_template, emit, request, Flask, SocketIO
 from database import Database
+from msg_database import MessageDatabase
 from flask import redirect
-import datetime
 
 database = Database()
+messages = MessageDatabase()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
-
-# Store messages in a list
-messages = []
 
 # Main pages
 @app.route('/')
@@ -19,16 +17,16 @@ def index():
     return render_template('index.html')
 
 # Chat page
-@app.route('/chat/<username>')
-def chat(username, role):
+@app.route('/chat')
+def another_chat(username, role):
     return render_template('chat.html', username=username, role=role)
 
-@app.post('/chat/<username>')
-def chat_info(username):
-    title = request.form['title']
-    message = request.form['message']
+@app.post('/chat')
+def chat(username, role):
+    title = request.form.get('title')
+    message = request.form.get('message')
 
-    # Create a dictionary to represent the question
+    # Create a dictionary to represent the message
     message_data = {
         'username': username,
         'title': title,
@@ -36,9 +34,25 @@ def chat_info(username):
     }
 
     # Append the question to the list
-    messages.append(message_data)
+    messages.add_message_to_database(message_data)
+    messages.read_from_database()
 
     return render_template('chat.html', username=username, role=role)
+
+# Course guide
+@app.route('/guide')
+def course_guide():
+    return render_template('guide.html')
+
+# Account - html does not exist yet
+@app.route('/account')
+def account_management():
+    return render_template('account.html')
+
+# User - only for admins
+@app.route('/users')
+def user_management():
+    return render_template('users.html')
 
 # Login routines
 @app.route('/login')
@@ -54,7 +68,7 @@ def login_info():
         return render_template('login.html', return_message=cc[1])
     
     user = database.check_database(username)
-    return chat(username, user.role)
+    return another_chat(username, user.role)
 
 # Register routines
 @app.route('/register')
