@@ -1,10 +1,11 @@
 from imports import ssl, render_template, emit, request, Flask, SocketIO
 from database import Database
 from msg_database import MessageDatabase
-from flask import redirect
+from flask import redirect, url_for
 
 database = Database()
-messages = MessageDatabase()
+# messages = MessageDatabase()
+messages = []
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -17,11 +18,11 @@ def index():
     return render_template('index.html')
 
 # Chat page
-@app.route('/chat')
+@app.route('/chat/<username>')
 def another_chat(username, role):
     return render_template('chat.html', username=username, role=role)
 
-@app.post('/chat')
+@app.route('/chat/<username>', methods=['POST'])
 def chat(username, role):
     title = request.form.get('title')
     message = request.form.get('message')
@@ -33,11 +34,17 @@ def chat(username, role):
         'message': message,
     }
 
-    # Append the question to the list
-    messages.add_message_to_database(message_data)
-    messages.read_from_database()
+    messages.append(message_data)
 
-    return render_template('chat.html', username=username, role=role)
+    # # Append the question to the list
+    # messages.add_message_to_database(message_data)
+    # messages.read_from_database()
+
+    with open('messages.txt', 'a') as f:
+        f.write(f"{message_data['username']}: ({message_data['title']}): {message_data['message']}\n")
+
+    return redirect(url_for('chat', username=username, role=role))  # it's better to redirect after POST
+
 
 # Course guide
 @app.route('/guide')
