@@ -18,8 +18,8 @@ def index():
 #     return render_template('chat.html', username=username, data=friends)
 
 @app.route('/chat/<username>')
-def forum(username, role):
-    return render_template('forum.html', username=username, data=role)
+def chat(username, role):
+    return render_template('chat.html', username=username, role=role)
 
 # Login routines
 @app.route('/login')
@@ -35,7 +35,7 @@ def login_info():
         return render_template('login.html', return_message=cc[1])
     
     user = database.check_database(username)
-    # return chat(username, user.friend_list)
+    return chat(username, user.role)
 
 # Register routines
 @app.route('/register')
