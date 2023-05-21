@@ -7,18 +7,18 @@ class Database:
         self.dict_database = {}
         
     def add_entry(self, data):
-        # data -> (username, password, salt)
+        # data -> (username, password, salt, role)
         new_user = User(data)
         
         self.dict_database.update({new_user.username: new_user})
-        if new_user.username == 'liam':
-            new_user.friend_list.append('tyra')
-        
-        else:
-            new_user.friend_list.append('liam')
+
+        new_user.role = "student" # new registered users are regular
         
     def check_database(self, username):
         return self.dict_database.get(username)
+    
+    def check_role(self, username): # test this
+        return self.dict_database.get(username)[3]
     
     def add_to_database(self, data): # checks if entry is in database, if so return error, else add to database - route to login
         if self.check_database(data[0]) is not None:
@@ -43,12 +43,13 @@ class Database:
         return (True, user_object.username)
 
 
-# Class instance for every user including friends
+# Class instance for every user - both students and admins
 class User:
     
     def __init__(self, data):
         self.username = data[0]
         self.password = data[1]
         self.salt = data[2]
-        self.friend_list = []
+        self.role = data[3] # can be either student or admin
+        # self.friend_list = []
         
