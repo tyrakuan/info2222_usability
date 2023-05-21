@@ -96,9 +96,8 @@ def register_info():
 # emit message
 @socketio.on('message')
 def handle_message(data):
-    # Send message to all clients
-    print("MESSAGE SENT")
-    socketio.emit('message', data, broadcast=True)
+    print('received message: ' + str(data))
+    emit('message', data, broadcast=True)
 
 # get salt from database and return to front end
 
@@ -115,5 +114,10 @@ def return_salt(username):
 
 
 if __name__ == '__main__':
+    cert = 'certificates/0.0.0.0.pem'
+    key = 'certificates/0.0.0.0-key.pem'
+
     app.run(debug=True)
+
+    # socketio.run(app, host='0.0.0.0', port=8080, certfile=cert, keyfile=key)
     
