@@ -62,11 +62,23 @@ def view_forum():
 @app.route('/guide')
 def course_guide():
     # table_contents = database.course_guide_table
+    role = session['role']  # Fetch role from session
+
+    admin = False
+    if role == 'admin':
+        admin = True
+
     paragraph_content = database.course_guide_paragraph_content
-    return render_template('guide.html', paragraph_content=paragraph_content)
+    return render_template('guide.html', paragraph_content=paragraph_content, admin=admin)
 
 @app.route('/save', methods=['POST'])
 def save_guide():
+
+    role = session['role']  # Fetch role from session
+
+    admin = False
+    if role == 'admin':
+        admin = True
 
     # Retrieve the paragraph contents from the request
     updated_paragraph_content = request.form.get('paragraph_content')
@@ -74,12 +86,19 @@ def save_guide():
     # Update the stored contents
     database.update_course_guide(updated_paragraph_content)
 
-    return render_template('guide.html', paragraph_content=updated_paragraph_content)
+    return render_template('guide.html', paragraph_content=updated_paragraph_content, admin=admin)
 
 # Account
 @app.route('/account')
 def account_management():
     return render_template('account.html')
+
+# @app.route('/edit_account', methods=['POST'])
+# def edit_account():
+#     username = request.form.get('username')
+#     password = request.form.get('password')
+    
+#     return render_template('account.html')
 
 # User - only for admins
 @app.route('/users')
@@ -126,14 +145,8 @@ def logout():
    session.pop('username', None)
    return redirect(url_for('index'))
 
-# emit message
-@socketio.on('message')
-def handle_message(data):
-    print('received message: ' + str(data))
-    emit('message', data, broadcast=True)
 
 # get salt from database and return to front end
-
 @app.route('/salt/<username>', methods=['GET'])
 def return_salt(username):
     

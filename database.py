@@ -32,6 +32,28 @@ class Database:
     def check_database(self, username):
         return self.dict_database.get(username)
     
+    # def change_username(self, username):
+
+    #     user = self.check_database(username)
+
+    #     if user is not None:
+    #         print("Already in database")
+    #         return render_template('account.html', return_message="Username already exists, please pick another one.")
+        
+    #     user.username = username
+    #     return render_template('account.html')
+        
+
+    # def change_password(self, username, password):
+
+    #     user = self.check_database(username)
+
+    #     if password.length < 1:
+    #         return render_template('account.html', return_message="Password needs to be at least one character, try again.")
+
+    #     user.password = password  # this needs to be salted
+    #     return render_template('account.html')
+    
     def add_to_database(self, data): # checks if entry is in database, if so return error, else add to database - route to login
         if self.check_database(data[0]) is not None:
             print("Already in database")
