@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
 	<title>Register Page</title>
-	<link rel="stylesheet" href="../styles/register.css">
+	<link rel="stylesheet" href="{{ url_for('static', filename='/styles/register.css') }}">
     <script>
 		// Hashes the password and adds salt
 		function hashPassword() {
