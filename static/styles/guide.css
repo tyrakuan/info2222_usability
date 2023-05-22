@@ -46,8 +46,8 @@ body {
 
 .container {
     background-color: white;
-    margin: 20px auto;
-    width: 80%;
+    margin: 5% auto;
+    width: 90%;
     padding: 20px;
     box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
     border-radius: 10px;
@@ -59,7 +59,7 @@ form {
 }
 
 h1, h2 {
-    color: #4B0082;
+    color: #000000;
 }
 
 textarea.quilljs-textarea {

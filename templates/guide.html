@@ -19,28 +19,29 @@
         <button class="logout-button" onclick="location.href='/logout'">Logout</button>
     </div>
 
-    <h1>Course Guide</h1>
-    {% if admin == True %}
-    <form action="/save" method="post">
-        <h2>Overview</h2>
-        <div style="padding:20px">
-            <textarea name="paragraph_content" class="quilljs-textarea">
-                {{ paragraph_content }}
-            </textarea>
-        </div>
-        <!-- Save button -->
-        <button type="submit">Save</button>
-    </form>
-    {% else %}
-        <h2>Overview</h2>
-        <div style="padding:20px">
-            <p name="paragraph_content" style="text-align: justify;">
-                {{ paragraph_content }}
-            </p>
-        </div>
-    {% endif %}
+    <div class="container">
+        <h1>Course Guide</h1>
+        {% if admin == True %}
+        <form action="/save" method="post">
+            <h2>Overview</h2>
+            <div style="padding:20px">
+                <textarea name="paragraph_content" class="quilljs-textarea">
+                    {{ paragraph_content }}
+                </textarea>
+            </div>
+            <!-- Save button -->
+            <button type="submit">Save</button>
+        </form>
+        {% else %}
+            <h2>Overview</h2>
+            <div style="padding:20px">
+                <p name="paragraph_content" style="text-align: justify;">
+                    {{ paragraph_content }}
+                </p>
+            </div>
+        {% endif %}
 
-
+    </div>
     
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script src="{{ url_for('static', filename='/js/quill-textarea.js') }}"></script>
