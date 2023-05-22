@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>COMP 2222 Chat</title>
+    <title>INFO2222 Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/index.css') }}">
   </head>
   <body>
     <h1>Welcome to the chat program!</h1>
-    <p><a href="/login">Log In</a></p>
-    <p><a href="/register">Register</a></p>
+    <div class="container">
+      <p><a href="/login">Log In</a></p>
+      <br>
+      <p><a href="/register">Register</a></p>
+    </div>
   </body>
 </html>
