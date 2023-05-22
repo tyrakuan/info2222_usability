@@ -7,9 +7,16 @@ body {
 }
 
 .header {
-    background-color: #b5b0f1;
+    background-color: #b5b0f1; /* Dark purple colour */
     padding: 15px;
     color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.nav {
+    display: flex;
+    gap: 15px;
 }
 
 .header a {
@@ -20,6 +27,20 @@ body {
 
 .header a:hover {
     color: #ddd;
+}
+
+.logout-button {
+    background-color: white;
+    color: #b5b0f1;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-button:hover {
+    background-color: #ddd;
+    color: #b5b0f1;
 }
 
 .container {
