@@ -1,7 +1,8 @@
-from imports import ssl, render_template, emit, request, Flask, SocketIO
+from imports import ssl, render_template, emit, request, Flask, SocketIO, BeautifulSoup
 from database import Database
 from msg_database import MessageDatabase
-from flask import redirect, url_for, session
+from flask import redirect, url_for, session, jsonify
+
 
 database = Database()
 # messages = MessageDatabase()
@@ -47,9 +48,26 @@ def chat(username, role):
 # Course guide
 @app.route('/guide')
 def course_guide():
-    return render_template('guide.html')
+    table_contents = database.course_guide_table
+    paragraph_content = database.course_guide_paragraph_content
+    return render_template('guide.html', table_contents=table_contents, paragraph_content=paragraph_content)
 
-# Account - html does not exist yet
+@app.route('/save', methods=['POST'])
+def save_guide():
+
+    # Retrieve the updated table and paragraph contents from the request
+    # updated_table_contents = request.json.get('table_contents')
+    # updated_paragraph_content = request.json.get('paragraph_content')
+
+    updated_paragraph_content = request.form.get('paragraph_content')
+
+    # Update the stored contents
+    database.update_course_guide(updated_paragraph_content)
+
+    return render_template('guide.html', paragraph_content=updated_paragraph_content)
+    # return jsonify(success=True)
+
+# Account
 @app.route('/account')
 def account_management():
     return render_template('account.html')

@@ -5,6 +5,20 @@ class Database:
     
     def __init__(self):
         self.dict_database = {}
+        self.course_guide_table = [
+            {"week": "1", "topic": "Introduction and overview", "assignments": ""},
+            {"week": "2", "topic": "Cryptography basics I", "assignments": ""},
+            # Add more initial table rows here
+        ]
+        self.course_guide_paragraph_content = """
+        This unit provides an integrated treatment of two critical topics for a computing professional:
+        human computer interaction (HCI) and security. The techniques and core ideas of HCI will be
+        studied with a particular focus on examples and case studies related to security. This unit
+        builds the students' awareness of the deep challenges in creating computing systems that can
+        meet people's needs for both HCI and security. It will develop basic skills to evaluate systems
+        for their effectiveness in meeting people's needs within the contexts of their use, building
+        knowledge of common mistakes in systems, and approaches to avoid those mistakes.
+    """
         
     def add_entry(self, data):
         # data -> (username, password, salt, role)
@@ -36,6 +50,10 @@ class Database:
             # return render_template('login.html', return_message="Password is incorrect. Try again")
                 
         return (True, user_object.username)
+    
+    def update_course_guide(self, paragraph):
+        # self.course_guide_table = table
+        self.course_guide_paragraph_content = paragraph
 
 
 # Class instance for every user

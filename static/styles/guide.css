@@ -38,10 +38,13 @@ h1, h2 {
 }
 
 table {
-    width: 80%;
+    /* width: 90%; */
+    width: auto;
+    padding: 10px;
     border-collapse: collapse;
     margin-top: 20px;
-    margin: auto;
+    margin-right:20px;
+    margin-left:20px;
 }
 
 th, td {
