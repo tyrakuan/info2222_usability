@@ -1,3 +1,5 @@
+import json
+
 # Class instance for every message
 class MessageDatabase:
 
@@ -8,29 +10,23 @@ class MessageDatabase:
 
     def add_message_to_database(self, data):
 
-        # data -> (key, username, title, message)
-        message = Message(data)
-        message.key = self.msg_counter
+        # data -> (key, username, message)
+        data.key = self.msg_counter
 
-        self.msg_database.update({message.key: message})
+        self.msg_database[data.key] = data
 
         self.msg_counter += 1
 
+    def write_message_database(self):
+        with open("messages.json", "w") as message_file:
+            json.dump(self.msg_database, message_file)
 
-    def read_from_database(self):
-
-        f = open("msg.txt", "w")
-
-        for k, v in self.msg_database:
-            print(k, v[1], v[2], v[3])
-            f.writelines(k, v[1], v[2], v[3])
-
-        f.close()
+    def get_messages(self):
+        return self.msg_database
 
 
 class Message:
-    def __init__(self, data):
+    def __init__(self, username, message):
         self.key = 0 # this will be updated
-        self.username = data.get('username')
-        self.title = data.get('title')
-        self.message = data.get('message')
+        self.username = username
+        self.message = message

@@ -1,12 +1,12 @@
 from imports import ssl, render_template, emit, request, Flask, SocketIO, BeautifulSoup
 from database import Database
-from msg_database import MessageDatabase
+from msg_database import MessageDatabase, Message
 from flask import redirect, url_for, session, jsonify
 
 
 database = Database()
-# messages = MessageDatabase()
-messages = []
+message_database = MessageDatabase()
+# messages = []
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -19,53 +19,53 @@ def index():
     return render_template('index.html')
 
 # Chat page
-@app.route('/chat/<username>')
-def another_chat(username):
+@app.route('/chat')
+def another_chat():
     role = session['role']  # Fetch role from session
+    username = session['username'] # Fetch username from session
     return render_template('chat.html', username=username, role=role)
 
-@app.route('/chat/<username>')
-def chat(username, role):
-    message = request.form.get('message')
+@app.route('/post_message', methods=['POST'])
+def chat():
 
-    # Create a dictionary to represent the message
-    message_data = {
-        'username': username,
-        'message': message,
-    }
+    role = session['role']  # Fetch role from session
+    username = session['username'] # Fetch username from session
 
-    messages.append(message_data)
+    message = request.form.get('message_input')
 
-    with open('messages.txt', 'a') as f:
-        f.write(f"{message_data['username']}: ({message_data['title']}): {message_data['message']}\n")
+    message_data = Message(username, message)
 
-    # Emit the message to all connected clients
-    socketio.emit('message', message_data)
+    message_database.add_message_to_database(message_data)
 
-    return redirect(url_for('chat', username=username, role=role))
+    # messages.append(message_data)
 
+    # return redirect(url_for('forum', username=username, role=role, messages=message_database.get_messages()))
+    return render_template('forum.html', username=username, role=role, messages=message_database.get_messages())
+    # return render_template('forum.html')
+
+# Forum
+@app.route('/forum')
+def view_forum():
+    username = session['username'] # Fetch username from session
+    return render_template('forum.html', username=username)
 
 # Course guide
 @app.route('/guide')
 def course_guide():
-    table_contents = database.course_guide_table
+    # table_contents = database.course_guide_table
     paragraph_content = database.course_guide_paragraph_content
-    return render_template('guide.html', table_contents=table_contents, paragraph_content=paragraph_content)
+    return render_template('guide.html', paragraph_content=paragraph_content)
 
 @app.route('/save', methods=['POST'])
 def save_guide():
 
-    # Retrieve the updated table and paragraph contents from the request
-    # updated_table_contents = request.json.get('table_contents')
-    # updated_paragraph_content = request.json.get('paragraph_content')
-
+    # Retrieve the paragraph contents from the request
     updated_paragraph_content = request.form.get('paragraph_content')
 
     # Update the stored contents
     database.update_course_guide(updated_paragraph_content)
 
     return render_template('guide.html', paragraph_content=updated_paragraph_content)
-    # return jsonify(success=True)
 
 # Account
 @app.route('/account')
@@ -92,7 +92,8 @@ def login_info():
     
     user = database.check_database(username)
     session['role'] = user.role
-    return redirect(url_for('another_chat', username=username))
+    session['username'] = user.username
+    return redirect(url_for('another_chat'))
 
 
 # Register routines
