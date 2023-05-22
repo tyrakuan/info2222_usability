@@ -2,13 +2,17 @@
 <html>
 <head>
     <title>Forum</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/styles/forum.css') }}">
 </head>
 <body>
     <div class="header">
-        <a href="/chat">Chat</a>
-        <a href="#">Forum</a>
-        <a href="/guide">Course Guide</a>
-        <a href="/account">Account</a>
+        <div class="nav">
+            <a href="/chat">Chat</a>
+            <a href="#">Forum</a>
+            <a href="/guide">Course Guide</a>
+            <a href="/account">Account</a>
+        </div>
+        <button class="logout-button" onclick="location.href='/logout'">Logout</button>
     </div>
 
     <table class="table table-striped" >

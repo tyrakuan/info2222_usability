@@ -7,10 +7,13 @@
   <body>
 
     <div class="header">
-      <a href="#">Chat</a>
-      <a href="/forum">Forum</a>
-      <a href="/guide">Course Guide</a>
-      <a href="/account">Account</a>
+      <div class="nav">
+        <a href="#">Chat</a>
+        <a href="/forum">Forum</a>
+        <a href="/guide">Course Guide</a>
+        <a href="/account">Account</a>
+      </div>
+      <button class="logout-button" onclick="location.href='/logout'">Logout</button>
     </div>
 
     <h1>Welcome to the chat, {{ username }}</h1>

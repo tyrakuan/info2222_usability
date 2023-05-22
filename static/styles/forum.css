@@ -1,0 +1,67 @@
+@import url("http://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300ita‌​lic,400italic,500,500italic,700,700italic,900italic,900");
+
+body {
+    background-color: #e1d5e7;
+    font-family: 'Roboto';
+    font-size: small;
+}
+
+.header {
+    background-color: #b5b0f1;
+    padding: 15px;
+    color: white;
+}
+
+.header a {
+    color: white;
+    margin-right: 15px;
+    text-decoration: none;
+}
+
+.header a:hover {
+    color: #ddd;
+}
+
+.container {
+    background-color: white;
+    margin: 0 auto;
+    width: 80%;
+    padding: 20px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+    border-radius: 10px;
+}
+
+form {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+form label {
+    font-size: 16px;
+    color: #333;
+    display: block;
+    margin-bottom: 10px;
+}
+
+form input[type="text"], form input[type="password"], form select {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+form input[type="submit"] {
+    background-color: #4B0082;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+form input[type="submit"]:hover {
+    background-color: #6A5ACD;
+}
