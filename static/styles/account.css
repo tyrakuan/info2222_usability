@@ -10,6 +10,13 @@ body {
     background-color: #b5b0f1; /* Dark purple colour */
     padding: 15px;
     color: white;
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+}
+.nav {
+    display: flex;
+    gap: 10px;
 }
 
 .header a {

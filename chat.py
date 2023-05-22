@@ -120,6 +120,11 @@ def register_info():
 
     return database.add_to_database((username, hash_pass, salt, role))
     
+@app.route('/logout')
+def logout():
+   # remove the username from the session if it is there
+   session.pop('username', None)
+   return redirect(url_for('index'))
 
 # emit message
 @socketio.on('message')
