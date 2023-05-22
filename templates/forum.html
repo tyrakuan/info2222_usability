@@ -10,7 +10,7 @@
         <a href="/guide">Course Guide</a>
         <a href="/account">Account</a>
     </div>
-    
+
     <table class="table table-striped" >
         <thead>
           <tr>
@@ -19,15 +19,14 @@
           </tr>
         </thead>
         <tbody>
-    {% for key, value in messages.items() %}
-      <tr>
-        <th scope="row">{{ value.username }}</th>
-        <td>{{ value.message }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
+        {% for key, value in messages.items() %}
+        <tr>
+            <th scope="row">{{ value['username'] }}</th>
+            <td>{{ value['message'] }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
     </table>
     <!-- Tam, B. (2023) -->
-
 </body>
 </html>

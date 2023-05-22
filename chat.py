@@ -2,6 +2,7 @@ from imports import ssl, render_template, emit, request, Flask, SocketIO, Beauti
 from database import Database
 from msg_database import MessageDatabase, Message
 from flask import redirect, url_for, session, jsonify
+import json
 
 
 database = Database()
@@ -37,17 +38,25 @@ def chat():
 
     message_database.add_message_to_database(message_data)
 
-    # messages.append(message_data)
+    messages_dict = {k: v.to_dict() for k, v in message_database.msg_database.items()}
+    with open("messages.json", "w") as f:
+        messages_json = json.dumps(messages_dict)
+        f.write(messages_json)
 
-    # return redirect(url_for('forum', username=username, role=role, messages=message_database.get_messages()))
-    return render_template('forum.html', username=username, role=role, messages=message_database.get_messages())
-    # return render_template('forum.html')
+    with open('messages.json', 'r') as f:
+        messages_dict_json = json.load(f)
+
+    return render_template('forum.html', username=username, role=role, messages=messages_dict_json)
 
 # Forum
 @app.route('/forum')
 def view_forum():
     username = session['username'] # Fetch username from session
-    return render_template('forum.html', username=username)
+
+    with open('messages.json', 'r') as f:
+        messages_dict_json = json.load(f)
+
+    return render_template('forum.html', messages=messages_dict_json)
 
 # Course guide
 @app.route('/guide')
